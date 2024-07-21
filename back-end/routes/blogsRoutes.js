@@ -224,7 +224,10 @@ router.delete("/:id/comments/:commentId", async (req, res) =>{
         if(!comment){
             return res.status(404).json({message: "Commento non trovato"});
         }
-        console.log(comment);
+        // COMMENT mi restuituisce un oggetto JavaScript normale, non un documento Mongoose.  
+        //comment.remove(); 
+
+        await blog.save();
            // Rimuovi il commento usando l'operatore $pull
            await Blog.updateOne(
             { _id: req.params.id },

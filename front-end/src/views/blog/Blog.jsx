@@ -3,7 +3,9 @@ import { Container, Image } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
+import CommentArea from "../../components/blog/comment-area/CommentArea";
 import BlogLike from "../../components/likes/BlogLike";
+
 import { getBlog, getAuthorEmail } from "../../services/api";
 
 import "./styles.css";
@@ -12,7 +14,6 @@ const Blog = () => {
   const [blog, setBlog] = useState(null);
   const [author, setAuthor] = useState(null);
   const params = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const { id } = params;
@@ -77,6 +78,8 @@ const Blog = () => {
             __html: blog.content,
           }}
         ></div>
+
+        <CommentArea />
       </Container>
     </div>
   );
