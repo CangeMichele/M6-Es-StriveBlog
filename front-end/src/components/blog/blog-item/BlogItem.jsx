@@ -5,24 +5,20 @@ import { Link } from "react-router-dom";
 import BlogAuthor from "../blog-author/BlogAuthor";
 import "./styles.css";
 
-
 const BlogItem = (props) => {
-  const [authorFound, setAuthorFound] = useState("");
+  const [infoAuthor, setInfoAuthor] = useState("");
   const { title, cover, author, _id } = props;
-useEffect(()=> {
 
-  fetch(
-    `http://localhost:5000/api/authors/email/${author.email}`
-  )
-  .then((response) => response.json())
-  .then((data) => {
-    setAuthorFound(data);
-  })
-  .catch((err) => console.error("ERRORE ", err));
-  
+  //interogo DB per ottenere info autore cos' che siano semrpe aggiornate
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/authors/email/${author.email}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setInfoAuthor(data);
+      })
+      .catch((err) => console.error("ERRORE ", err));
+  }, [author]);
 
-},[authorFound, author.email]);
-  
   return (
     <Link to={`/blog/${_id}`} className="blog-link">
       <Card className="blog-card">
@@ -31,7 +27,7 @@ useEffect(()=> {
           <Card.Title>{title}</Card.Title>
         </Card.Body>
         <Card.Footer>
-          <BlogAuthor {...authorFound} />
+          <BlogAuthor {...infoAuthor} />
         </Card.Footer>
       </Card>
     </Link>

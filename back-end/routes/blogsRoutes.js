@@ -7,7 +7,7 @@ import { sendEmail } from "../services/mailServices.js";
 
 const router = express.Router();
 
-// POST/blog => crea nuovo blog con caticamento file
+// ----- POST/blog => crea nuovo blog con caticamento file
 router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
     try {
 
@@ -43,10 +43,7 @@ router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
 });
 
 
-
-
-
-// PATCH/blog/:_id => modifica blog
+// ----- PATCH/blog/:_id => modifica blog
 router.patch("/:id", async (req, res) => {
     try {
         const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
@@ -58,7 +55,8 @@ router.patch("/:id", async (req, res) => {
     }
 })
 
-// DELETE /blogPosts/:id
+
+// ----- DELETE /blogPosts/:id
 router.delete("/:id", async (req, res) => {
     try {
         await Blog.findByIdAndDelete(req.params.id);
@@ -69,8 +67,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 
-
-// GET/blog => ritorna lista dei blog senza impaginazione
+// ---- GET/blog => ritorna lista dei blog SENZA impaginazione
 
 router.get("/all", async (req, res) => {
     try {
@@ -82,8 +79,7 @@ router.get("/all", async (req, res) => {
 });
  
 
-
-// GET/blog => ritorna lista dei blog con paginazione
+// ----- GET/blog => ritorna lista dei blog CON paginazione
 router.get("/", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -110,7 +106,7 @@ router.get("/", async (req, res) => {
 });
 
 
-// GET/blog/:_id => ritorna il singolo blog
+// ----- GET/blog/:_id => ritorna il singolo blog
 router.get("/:id", async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id)
@@ -125,7 +121,7 @@ router.get("/:id", async (req, res) => {
 });
 
 
-//GET/blog => ricerca su titolo
+// ----- GET/blog => ricerca su titolo
 router.get("/", async (req, res) => {
     try {
         let query = {};
@@ -138,8 +134,6 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
-
 
 
 export default router;

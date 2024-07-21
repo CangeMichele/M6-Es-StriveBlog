@@ -31,7 +31,7 @@ const Blog = () => {
   }
 
   if (!blog) {
-    return null; // Or you could return a 404 component if desired
+    return null; 
   }
 
   return (
