@@ -7,7 +7,7 @@ import { sendEmail } from "../services/mailServices.js";
 
 const router = express.Router();
 
-// ----- POST/blog => crea nuovo blog con caticamento file
+// ----- POST/blogPosts => crea nuovo blog con caticamento file
 router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
     try {
 
@@ -24,6 +24,7 @@ router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
         await newBlog.save();
 
         //creo email di conferma 
+        /*
         const htmlContent = `
         <h1>Pubblicazione effettua !<h1>
         <p>ciao <strong>${newBlog.author.nome}</strong>,</P>
@@ -33,7 +34,7 @@ router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
 
         //invio email
         await sendEmail(newBlog.author.email, 'StriveBlog - caricamento effettuato', htmlContent);
-
+        */
         res.status(201).json(newBlog);
 
     } catch (error) {
@@ -43,7 +44,7 @@ router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
 });
 
 
-// ----- PATCH/blog/:_id => modifica blog
+// ----- PATCH/blogPosts/:_id => modifica blog
 router.patch("/:id", async (req, res) => {
     try {
         const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
@@ -67,8 +68,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 
-// ---- GET/blog => ritorna lista dei blog SENZA impaginazione
-
+// ---- GET/blogPosts => ritorna lista dei blog SENZA impaginazione
 router.get("/all", async (req, res) => {
     try {
         const blog = await Blog.find({});
@@ -79,7 +79,7 @@ router.get("/all", async (req, res) => {
 });
  
 
-// ----- GET/blog => ritorna lista dei blog CON paginazione
+// ----- GET/blogPosts => ritorna lista dei blog CON paginazione
 router.get("/", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -106,7 +106,7 @@ router.get("/", async (req, res) => {
 });
 
 
-// ----- GET/blog/:_id => ritorna il singolo blog
+// ----- GET/blogPosts/:_id => ritorna il singolo blog
 router.get("/:id", async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id)
@@ -121,7 +121,7 @@ router.get("/:id", async (req, res) => {
 });
 
 
-// ----- GET/blog => ricerca su titolo
+// ----- GET/blogPosts => ricerca su titolo
 router.get("/", async (req, res) => {
     try {
         let query = {};
@@ -135,5 +135,61 @@ router.get("/", async (req, res) => {
     }
 });
 
+// ----- GET/blogPosts/:id/comments => ritorna tutti i commenti di uno specifico post
+router.get("/:id/comments", async (req, res) =>{
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if(!blog) {
+            return res.status(404).json({message: "Blog non trovato"});
+        }
+        res.json(blog.comments)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+// ----- GET/blogPosts/:id/comments/:commentId => ritorna uno commento specifico di un post specifico
+router.get("/:id/comments/:commentId", async (req, res) => {
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if(!blog){
+            return res.status(404).json({message: "Blog non trovato"});
+        }
+
+        const comment = blog.comments(req.params.commentId);
+        if(!comment){
+            return res.status(404).json({message: "Commento non trovato"});
+        }
+        res.json(comment);
+
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
+
+
+// ----- POST/blogPosts/:id/comments => aggiungi un nuovo commento ad un post specifico
+router.post("/:id/comments", async (req,res)=>{
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if(!blog){
+            return res.status(404).json({message: "Blog non trovato"});
+        }
+        
+        const newComment = {
+            nome: req.body.nome,
+            cognome: req.body.cognome,
+            email: req.body.email,
+            content: req.body.content
+          };
+
+          blog.comments.push(newComment);
+          await blog.save();
+          res.status(201).json(newComment);
+
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
 
 export default router;
