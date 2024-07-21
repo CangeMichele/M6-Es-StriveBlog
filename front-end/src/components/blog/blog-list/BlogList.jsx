@@ -1,25 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row, Button, Form } from "react-bootstrap";
 import BlogItem from "../blog-item/BlogItem";
+import { getBlogsPage } from "../../../services/api";
 
 const BlogList = (props) => {
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(3);
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    //richiamo i dati dal db con impaginazione
-    fetch(
-      `http://localhost:5000/api/blogPosts?page=${currentPage}&limit=${limit}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setBlogs(data.blogs);
-        setTotalPages(data.totalPages);
-      })
-      .catch((err) => console.error("ERRORE ", err));
+
+      //richiamo i dati dal db con impaginazione
+     const fetchBlogs = async () => {
+      try {
+        const response = await getBlogsPage(currentPage, limit);
+        setBlogs(response.data.blogs);
+        setTotalPages(response.data.totalPages); 
+      } catch (error) {
+        console.error("Errore nella fetch del post:", error);
+      }
+    };
+    fetchBlogs();
+
   }, [currentPage, limit]);
+
 
   return (
     <>
@@ -58,7 +64,12 @@ const BlogList = (props) => {
           </Button>
           <Form.Select
             value={limit}
-            onChange={(e) => setLimit(Number(e.target.value))}
+            onChange={
+              (e) => {
+                setLimit(Number(e.target.value));
+                setCurrentPage(1)
+              }
+            }
             className="mx-2"
             style={{ width: 'auto' }}
           >

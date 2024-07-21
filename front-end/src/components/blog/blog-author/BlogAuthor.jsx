@@ -2,7 +2,7 @@ import React from "react";
 import { Col, Image, Row } from "react-bootstrap";
 import "./styles.css";
 
-const BlogAuthor = props => {
+const BlogAuthor = (props) => {
   const { nome, cognome, avatar } = props;
   return (
     <Row>

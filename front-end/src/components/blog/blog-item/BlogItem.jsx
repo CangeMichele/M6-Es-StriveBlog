@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
+
+import { getAuthorEmail } from "../../../services/api";
 import BlogAuthor from "../blog-author/BlogAuthor";
 import "./styles.css";
 
@@ -9,14 +10,20 @@ const BlogItem = (props) => {
   const [infoAuthor, setInfoAuthor] = useState("");
   const { title, cover, author, _id } = props;
 
+
   //interogo DB per ottenere info autore cos' che siano semrpe aggiornate
   useEffect(() => {
-    fetch(`http://localhost:5000/api/authors/email/${author.email}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setInfoAuthor(data);
-      })
-      .catch((err) => console.error("ERRORE ", err));
+
+    const fetchAuthorEmail = async () => {
+      try {
+        const response = await getAuthorEmail(author.email);
+        setInfoAuthor(response);
+      } catch (error) {
+        console.error("Errore nella fetch AuthorEmail:", error);
+      }
+    };
+    fetchAuthorEmail();
+
   }, [author]);
 
   return (

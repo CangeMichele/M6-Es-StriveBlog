@@ -3,7 +3,8 @@ import { Schema, model } from "mongoose";
 // ----- Schema dei commenti(contenuti nel blog)
 const commentSchema = new Schema(
   {
-    name: { type: String, required: true },
+    nome: { type: String, required: true },
+    cognome: { type: String, required: true },
     email: { type: String, required: true },
     content: { type: String, required: true },
   },

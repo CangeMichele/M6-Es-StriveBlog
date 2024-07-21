@@ -1,34 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Container, Image } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
+
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
+import { getBlog, getAuthorEmail } from "../../services/api";
+
 import "./styles.css";
 
 const Blog = () => {
   const [blog, setBlog] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [author, setAuthor] = useState(null);
   const params = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     const { id } = params;
 
-    fetch(`http://localhost:5000/api/blogPosts/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setBlog(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("ERRORE ", err);
-        navigate("/404");
-      });
-  }, [params, navigate]);
+    const fetchBlog = async () => {
+      try {
+        const response = await getBlog(id);
+        setBlog(response);
+      } catch (error) {
+        console.error("Errore nella fetch del post:", error);
+      }
+    };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    fetchBlog();
+  }, [params]);
+  
+
+  useEffect(() => {
+    const fetchAuthorEmail = async () => {
+      if (blog && blog.author && blog.author.email) {
+        try {
+          const response = await getAuthorEmail(blog.author.email);
+          setAuthor(response);
+        } catch (error) {
+          console.error("Errore nella fetch AuthorEmail:", error);
+        }
+      }
+    };
+
+    fetchAuthorEmail();
+  }, [blog]);
 
   if (!blog) {
     return null; 
@@ -42,7 +57,7 @@ const Blog = () => {
 
         <div className="blog-details-container">
           <div className="blog-details-author">
-            <BlogAuthor {...blog.author} />
+            <BlogAuthor {...author} />
           </div>
           <div className="blog-details-info">
             <div>{new Date(blog.createdAt).toLocaleDateString()}</div>

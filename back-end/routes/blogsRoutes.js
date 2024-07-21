@@ -156,7 +156,7 @@ router.get("/:id/comments/:commentId", async (req, res) => {
             return res.status(404).json({message: "Blog non trovato"});
         }
 
-        const comment = blog.comments(req.params.commentId);
+        const comment = blog.comments.id(req.params.commentId);
         if(!comment){
             return res.status(404).json({message: "Commento non trovato"});
         }
@@ -165,7 +165,7 @@ router.get("/:id/comments/:commentId", async (req, res) => {
     } catch (error) {
         res.status(500).json({message: error.message});
     }
-})
+});
 
 
 // ----- POST/blogPosts/:id/comments => aggiungi un nuovo commento ad un post specifico
@@ -190,6 +190,52 @@ router.post("/:id/comments", async (req,res)=>{
     } catch (error) {
         res.status(500).json({message: error.message});
     }
+});
+
+// ------ PUT/blogPosts/:id/comments/:commentId => cambia un commento di un post specifico
+router.put("/:id/comments/:commentId", async (req, res) =>{
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if(!blog){
+            return res.status(404).json({message: "Blog non trovato"});
+        }
+        const comment = blog.comments.id(req.params.commentId);
+        if(!comment){
+            return res.status(404).json({message: "Commento non trovato"});
+        }
+        comment.content = req.body.content;
+        await blog.save();
+        res.json(comment);
+        
+    } catch (error) {
+        res.status(500).json({message: error.message});
+
+    }
 })
+
+// -----  DELETE/blogPosts/:id/comments/:commentId => elimina un commento specifico di un post specifico
+router.delete("/:id/comments/:commentId", async (req, res) =>{
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if(!blog){
+            return res.status(404).json({message: "Blog non trovato"});
+        }
+        const comment = blog.comments.id(req.params.commentId);
+        if(!comment){
+            return res.status(404).json({message: "Commento non trovato"});
+        }
+        console.log(comment);
+           // Rimuovi il commento usando l'operatore $pull
+           await Blog.updateOne(
+            { _id: req.params.id },
+            { $pull: { comments: { _id: req.params.commentId } } }
+        )
+        res.json("commento eliminato con successo")
+    } catch (error) {
+        res.status(500).json({message: error.message});
+
+    }
+})
+
 
 export default router;

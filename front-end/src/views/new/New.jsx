@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "./styles.css";
-import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import { EditorState, convertToRaw } from "draft-js";
+
+import { Button, Container, Form } from "react-bootstrap";
+
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import "./styles.css";
 
 const NewBlogPost = () => {
   const [newBlog, setNewBlog] = useState({
