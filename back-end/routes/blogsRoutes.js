@@ -2,46 +2,40 @@ import express from "express";
 import Blog from "../models/Blog.js";
 
 import cloudinaryUploader from "../config/cloudinaryConfig.js"
+import { sendEmail } from "../services/mailServices.js";
 
 
 const router = express.Router();
 
-// POST/blog => crea nuovo blog
-// router.post("/", async (req, res) => {
-//     const { category, title, cover, readTime, author, content } = req.body;
-
-//     try {
-//       const newBlog = await Blog.create({
-//         //destrutturo per essere sicuro di non ritrovarmi campi id automatici non richiesti
-//         category,
-//         title,
-//         cover,
-//         readTime,
-//         author,
-//         content
-//       });
-//       console.log(newBlog);
-
-
-//       res.status(201).json(newBlog);
-//     } catch (error) {
-//       res.status(500).json({ message: error.message });
-//     }
-//   });
-
 // POST/blog => crea nuovo blog con caticamento file
 router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
     try {
+
+        //recupero i dati da inserire nel db
         const blogData = req.body;
+
+        //assegno a "cover" l'url dell'immagine
         if (req.file) {
             blogData.cover = req.file.path;
         }
 
+        //salvo i dati nel db
         const newBlog = new Blog(blogData);
         await newBlog.save();
 
+        //creo email di conferma 
+        const htmlContent = `
+        <h1>Pubblicazione effettua !<h1>
+        <p>ciao <strong>${newBlog.author.nome}</strong>,</P>
+        <P>il tuo post <strong>"${newBlog.title}"</strong> è stato pubblicato con successo.</p>
+        `;
+
+
+        //invio email
+        await sendEmail(newBlog.author.email, 'StriveBlog - caricamento effettuato', htmlContent);
+
         res.status(201).json(newBlog);
-        
+
     } catch (error) {
         console.error("Errore nella creazione nuovo blog", error);
         res.status(400).json({ message: error.message });
@@ -76,15 +70,17 @@ router.delete("/:id", async (req, res) => {
 
 
 
-// GET/blog => ritorna lista dei blog
-// router.get("/", async (req, res) => {
-//     try {
-//         const blog = await Blog.find({});
-//         res.json(blog);
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// });
+// GET/blog => ritorna lista dei blog senza impaginazione
+
+router.get("/all", async (req, res) => {
+    try {
+        const blog = await Blog.find({});
+        res.json(blog);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+ 
 
 
 // GET/blog => ritorna lista dei blog con paginazione
@@ -113,12 +109,13 @@ router.get("/", async (req, res) => {
     }
 });
 
+
 // GET/blog/:_id => ritorna il singolo blog
 router.get("/:id", async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id)
         if (!blog) {
-            return res.status(404).json({ message: "utente non trovato" })
+            return res.status(404).json({ message: "blog non trovato" })
         }
         res.json(blog);
     } catch (error) {

@@ -30,24 +30,12 @@ const blogSchema = new Schema(
     },
 
     author: {
-      type: {
-        nome: {
-          type: String,
-          required: true
-        },
-        cognome: {
-          type: String,
-          required: true
-        },
+      
         email: {
           type: String,
           required: true
-        },
-        avatar: {
-          type: String,
-          required: false
         }
-      },
+      
     },
 
     content: {

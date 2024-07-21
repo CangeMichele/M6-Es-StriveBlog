@@ -9,6 +9,7 @@ const BlogList = (props) => {
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
+    //richiamo i dati dal db con impaginazione
     fetch(
       `http://localhost:5000/api/blogPosts?page=${currentPage}&limit=${limit}`
     )
@@ -62,8 +63,8 @@ const BlogList = (props) => {
             style={{ width: 'auto' }}
           >
             <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
+            <option value={6}>6</option>
+            <option value={9}>9</option>
           </Form.Select>
         </Col>
       </Row>

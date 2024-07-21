@@ -1,0 +1,59 @@
+{
+        "_id": "669658581f5081ff5787e9e1",
+        "nome": "Mario",
+        "cognome": "Broa",
+        "email": "fklgjd@email.it",
+        "data_nascita": " 24/05/1992",
+        "avatar": "https://res.cloudinary.com/dvbmskxg4/image/upload/v1721467710/blog_covers/xpeztl7xvifbrjzpwbix.jpg",
+        "__v": 0
+    },
+    {
+        "_id": "669658671f5081ff5787e9e4",
+        "nome": "Bri",
+        "cognome": "Cho",
+        "email": "briciola@emial.it",
+        "data_nascita": "25/01/76",
+        "__v": 0,
+        "avatar": "https://res.cloudinary.com/dvbmskxg4/image/upload/v1721467805/blog_covers/cd1h0pt6expzrxfwe0fd.jpg"
+    },
+    {
+        "_id": "669658871f5081ff5787e9e6",
+        "nome": "Michele",
+        "cognome": "C.",
+        "email": "Michele@emial.it",
+        "data_nascita": "25/05/92",
+        "__v": 0
+    },
+    {
+        "_id": "669677e9235e296a05eeee99",
+        "nome": "Pippo",
+        "cognome": "Baudo",
+        "email": "pippo@emial.it",
+        "data_nascita": "25/05/92",
+        "__v": 0
+    },
+    {
+        "_id": "669677fc235e296a05eeee9d",
+        "nome": "Paeparoga",
+        "cognome": "Baudo",
+        "email": "papebaudo@emial.it",
+        "data_nascita": "25/05/92",
+        "__v": 0
+    },
+    {
+        "_id": "6696781d235e296a05eeee9f",
+        "nome": "freddo",
+        "cognome": "begins",
+        "email": "breeghins@emial.it",
+        "data_nascita": "25/05/92",
+        "__v": 0
+    },
+    {
+        "_id": "669678e6235e296a05eeeea4",
+        "nome": "Tobia",
+        "cognome": "De Angelis",
+        "email": "toby@email.it",
+        "data_nascita": "25/05/92",
+        "__v": 0
+    }
+]

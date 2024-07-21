@@ -9,19 +9,17 @@ import { useNavigate } from "react-router-dom";
 
 const NewBlogPost = () => {
   const [newBlog, setNewBlog] = useState({
-    category: "categoria 1",
+    category: "Student Stories",
     title: "",
     readTime: {
       value: "0",
       unit: "minute",
     },
     author: {
-      nome: "Michele",
-      cognome: "Cangemi",
-      avatar: "https://picsum.photos/300/300",
       email: "cange.michele@gmail.com",
     },
     content: "",
+    cover:"https://picsum.photos/1000/300"
   });
 
   const [coverFile, setCoverFile] = useState(null);
@@ -30,6 +28,7 @@ const NewBlogPost = () => {
     EditorState.createEmpty()
   );
 
+  // gestore cambiamento campi form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewBlog({
@@ -38,6 +37,7 @@ const NewBlogPost = () => {
     });
   };
 
+  // gestore cambiamento dell'editor
   const handleEditorChange = (editorState) => {
     setEditorState(editorState);
     const rawContentState = convertToRaw(editorState.getCurrentContent());
@@ -45,6 +45,7 @@ const NewBlogPost = () => {
 
     const lengthBlog = htmlContent.length;
     let readTimeValue;
+    // in base alla lunghezza del blog calcolo il tempo di lettura
     if (lengthBlog <= 1000) {
       readTimeValue = 1;
     } else if (lengthBlog > 1000 && lengthBlog <= 1200) {
@@ -62,11 +63,13 @@ const NewBlogPost = () => {
     });
   };
 
+  // gestore cambiamento seleziona file
   const handleFileChange = (e) => {
     setCoverFile(e.target.files[0]);
-    console.log("Selected file:", e.target.files[0]);
+    console.log(e.target.files[0]);
   };
 
+  // gestore invio dati form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,19 +77,18 @@ const NewBlogPost = () => {
       const formData = new FormData();
 
       Object.keys(newBlog).forEach((key) => {
+
         if (key === "readTime") {
           formData.append("readTime[value]", newBlog.readTime.value);
           formData.append("readTime[unit]", newBlog.readTime.unit);
-        }
-
-        if (key === "author") {
-          formData.append("author[nome]", newBlog.author.nome);
-          formData.append("author[cognome]", newBlog.author.cognome);
-          formData.append("author[avatar]", newBlog.author.avatar);
+        
+        } else if (key === "author") {
           formData.append("author[email]", newBlog.author.email);
+       
+        } else {
+          formData.append(key, newBlog[key]);
         }
 
-        formData.append(key, newBlog[key]);
       });
 
       if (coverFile) {
@@ -104,11 +106,11 @@ const NewBlogPost = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Errore HTTP! stato: ${response.status}`);
       }
 
       const result = await response.json();
-      console.log("Blog post created:", result);
+      console.log("Post del blog creato:", result);
       navigate("/");
     } catch (error) {
       console.error("Errore nella creazione del post:", error);
@@ -140,10 +142,10 @@ const NewBlogPost = () => {
             name="category"
             required
           >
-            <option>Categoria 1</option>
-            <option>Categoria 2</option>
-            <option>Categoria 3</option>
-            <option>Categoria 4</option>
+            <option>Student Stories</option>
+            <option>Getting Started</option>
+            <option>The W Pledge</option>
+            <option>Learnings and Tips</option>
             <option>Categoria 5</option>
           </Form.Control>
         </Form.Group>
