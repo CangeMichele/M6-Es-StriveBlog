@@ -51,13 +51,17 @@ router.post("/", async (req, res) => {
     const author = new Author(req.body);
     try {
         const newAuthor = await author.save();
-        res.status(201).json(newAuthor);
+        
+        //rimozione della password dalla risposta per sicurezza
+        const response = await newAuthor.toObject();
+        delete response.password;
+
+
+        res.status(201).json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
-
-//----- Extra
+})
 
 //PATCH per aggiornare singola voce e non tutto il documento
 router.patch("/:id", async (req, res) => {

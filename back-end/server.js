@@ -6,6 +6,7 @@ import cors from "cors";
 
 import authorsRoutes from "./routes/authorsRoutes.js";
 import blogsRoutes from "./routes/blogsRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -34,6 +35,7 @@ mongoose
     .then(() => console.log("MONGOOSE connesso"))
     .catch((err) => console.error("MONGOOSE: errore - ", err))
 
+app.use("/api/auth", authRoutes)
 app.use("/api/authors", authorsRoutes);
 app.use("/api/blogPosts", blogsRoutes);
 

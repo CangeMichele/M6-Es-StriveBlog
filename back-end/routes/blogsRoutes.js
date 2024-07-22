@@ -2,71 +2,13 @@ import express from "express";
 import Blog from "../models/Blog.js";
 
 import cloudinaryUploader from "../config/cloudinaryConfig.js"
-import { sendEmail } from "../services/mailServices.js";
+//import { sendEmail } from "../services/mailServices.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js"; 
 
 
 const router = express.Router();
 
-// ----- POST/blogPosts => crea nuovo blog con caticamento file
-router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
-    try {
-
-        //recupero i dati da inserire nel db
-        const blogData = req.body;
-
-        //assegno a "cover" l'url dell'immagine
-        if (req.file) {
-            blogData.cover = req.file.path;
-        }
-
-        //salvo i dati nel db
-        const newBlog = new Blog(blogData);
-        await newBlog.save();
-
-        //creo email di conferma 
-        /*
-        const htmlContent = `
-        <h1>Pubblicazione effettua !<h1>
-        <p>ciao <strong>${newBlog.author.nome}</strong>,</P>
-        <P>il tuo post <strong>"${newBlog.title}"</strong> è stato pubblicato con successo.</p>
-        `;
-
-
-        //invio email
-        await sendEmail(newBlog.author.email, 'StriveBlog - caricamento effettuato', htmlContent);
-        */
-        res.status(201).json(newBlog);
-
-    } catch (error) {
-        console.error("Errore nella creazione nuovo blog", error);
-        res.status(400).json({ message: error.message });
-    }
-});
-
-
-// ----- PATCH/blogPosts/:_id => modifica blog
-router.patch("/:id", async (req, res) => {
-    try {
-        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-        });
-        res.json(updatedBlog);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-})
-
-
-// ----- DELETE /blogPosts/:id
-router.delete("/:id", async (req, res) => {
-    try {
-        await Blog.findByIdAndDelete(req.params.id);
-        res.json({ message: "Blog cancellato" })
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
+// ----- ***** TUTTE LE GET ***** -----
 
 // ---- GET/blogPosts => ritorna lista dei blog SENZA impaginazione
 router.get("/all", async (req, res) => {
@@ -164,6 +106,72 @@ router.get("/:id/comments/:commentId", async (req, res) => {
 
     } catch (error) {
         res.status(500).json({message: error.message});
+    }
+});
+
+
+
+
+
+// ----- ***** TUTTE LE ALTRE CHIAMATE (protette da login) ***** -----
+router.use(authMiddleware);
+
+// ----- POST/blogPosts => crea nuovo blog con caticamento file
+router.post("/", cloudinaryUploader.single("cover"), async (req, res) => {
+    try {
+
+        //recupero i dati da inserire nel db
+        const blogData = req.body;
+
+        //assegno a "cover" l'url dell'immagine
+        if (req.file) {
+            blogData.cover = req.file.path;
+        }
+
+        //salvo i dati nel db
+        const newBlog = new Blog(blogData);
+        await newBlog.save();
+
+        //creo email di conferma (funziona ma problemi con account mailgun)
+        /*
+        const htmlContent = `
+        <h1>Pubblicazione effettua !<h1>
+        <p>ciao <strong>${newBlog.author.nome}</strong>,</P>
+        <P>il tuo post <strong>"${newBlog.title}"</strong> è stato pubblicato con successo.</p>
+        `;
+
+        //invio email
+        await sendEmail(newBlog.author.email, 'StriveBlog - caricamento effettuato', htmlContent);
+        */
+        res.status(201).json(newBlog);
+
+    } catch (error) {
+        console.error("Errore nella creazione nuovo blog", error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+// ----- PATCH/blogPosts/:_id => modifica blog
+router.patch("/:id", async (req, res) => {
+    try {
+        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+        });
+        res.json(updatedBlog);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+})
+
+
+// ----- DELETE /blogPosts/:id
+router.delete("/:id", async (req, res) => {
+    try {
+        await Blog.findByIdAndDelete(req.params.id);
+        res.json({ message: "Blog cancellato" })
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 

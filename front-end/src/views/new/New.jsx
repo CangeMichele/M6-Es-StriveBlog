@@ -5,21 +5,24 @@ import { EditorState, convertToRaw } from "draft-js";
 
 import { Button, Container, Form } from "react-bootstrap";
 
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { createBlog, getMe } from "../../services/api";
+
 
 import "./styles.css";
 
 const NewBlogPost = () => {
   const [newBlog, setNewBlog] = useState({
-    category: "Student Stories",
+    category: "",
     title: "",
     readTime: {
       value: "0",
       unit: "minute",
     },
     author: {
-      email: "cange.michele@gmail.com",
+      email: "",
     },
     content: "",
     cover:"https://picsum.photos/1000/300"
@@ -30,6 +33,19 @@ const NewBlogPost = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
+
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      try {
+        const userData = await getMe();
+        setNewBlog((prevBlog) => ({ ...newBlog, author: userData.email }));
+      } catch (error) {
+        console.error("Errore nel recupero dei dati utente:", error);
+        navigate("/login");
+      }
+    };
+    fetchUserEmail();
+  }, [navigate]);
 
   // gestore cambiamento campi form
   const handleChange = (e) => {
@@ -103,18 +119,9 @@ const NewBlogPost = () => {
         console.log(pair[0] + ": " + pair[1]);
       }
 
-      const response = await fetch("http://localhost:5000/api/blogPosts", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Errore HTTP! stato: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Post del blog creato:", result);
+      await createBlog(formData);
       navigate("/");
+
     } catch (error) {
       console.error("Errore nella creazione del post:", error);
     }
